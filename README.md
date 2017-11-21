@@ -1,11 +1,9 @@
 # WoW-Node-Authserver
-World of Warcraft authserver in node.js
+World of Warcraft authserver in node.js (work in progress)
 
 Instructions to run Authserver
 - Clone repository 
-- Make copy of 'config.ini.default'
-- Edit 'config.ini.default'
+- Edit 'config.ini.default' and save as 'config.ini'
 - Run 'npm install'
 - Run 'node run.js'
 
-Note: I will include a auth db for testing purposes eventually.

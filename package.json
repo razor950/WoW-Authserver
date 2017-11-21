@@ -1,0 +1,25 @@
+{
+  "author": "",
+  "name": "",
+  "description": "",
+  "version": "0.0.1",
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/razor950/WoW-Authserver"
+  },
+  "scripts": {
+    "test": "node ./src/test/test.js"
+  },
+  "dependencies": {
+    "ini": "1.3.x",
+    "mysql": "2.15.x",
+    "bignumber.js": "4.1.x",
+    "date-utils": "1.2.x",
+    "buffertools": "2.1.x",
+    "colors": "*"
+  },
+  "engines": {
+    "node": "*"
+  }
+}
