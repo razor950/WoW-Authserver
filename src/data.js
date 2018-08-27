@@ -88,75 +88,66 @@ module.exports.prototype.start = function(interval, callback) {
     this.updateCache(callback);
 };
 
-module.exports.prototype.updateCache = function(callback) {
+module.exports.prototype.updateCache = callback =>
     this.query(
         QUERIES.GET_ACCOUNT_CACHE,
         [this.max_account, ACCOUNT_CACHE_LIMIT],
-        (function(_this, interval, callback) {
-            return function(err, rows) {
-                if (err)
+        ((_this, interval, callback) => (err, rows) => {
+            if (err)
+                return log.Log(
+                    new log.Error('MYSQL', err, log.LEVEL.ERROR),
+                    'SERVER',
+                );
+
+            for (var i = 0; i < rows.length; ++i) {
+                _this.accounts.set(rows[i].account_username, true);
+                if (rows[i].account_id > _this.max_account)
+                    _this.max_account = rows[i].account_id;
+            }
+
+            _this.cnt_account += i;
+            if (!callback && i)
+                // scheduled update (not fresh get) and we got new accounts
+                log.Log(
+                    new log.Error(
+                        'DATA',
+                        'Added ' + i + ' accounts to cache',
+                        log.LEVEL.INFO,
+                    ),
+                    'SERVER',
+                );
+
+            if (i === ACCOUNT_CACHE_LIMIT) {
+                // got max possible new accounts, repeat query
+                setTimeout(
+                    ((_this2, cb) => () => _this2.updateCache(cb))(
+                        _this,
+                        callback,
+                    ),
+                    0,
+                );
+            } // last batch of new accounts, reschedule update and call callback if needed
+            else {
+                setTimeout(
+                    (_this2 => () => _this2.updateCache())(_this),
+                    _this.interval,
+                );
+
+                if (typeof callback === 'function') {
                     log.Log(
-                        new log.Error('MYSQL', err, log.LEVEL.ERROR),
+                        new log.Error(
+                            'DATA',
+                            'Added ' +
+                                _this.cnt_account +
+                                ' accounts to cache (' +
+                                (Date.now() - _this.start_time) +
+                                'ms)',
+                            log.LEVEL.INFO,
+                        ),
                         'SERVER',
                     );
-                else {
-                    for (var i = 0; i < rows.length; ++i) {
-                        _this.accounts.set(rows[i].account_username, true);
-                        if (rows[i].account_id > _this.max_account)
-                            _this.max_account = rows[i].account_id;
-                    }
-
-                    _this.cnt_account += i;
-                    if (!callback && i)
-                        // scheduled update (not fresh get) and we got new accounts
-                        log.Log(
-                            new log.Error(
-                                'DATA',
-                                'Added ' + i + ' accounts to cache',
-                                log.LEVEL.INFO,
-                            ),
-                            'SERVER',
-                        );
-
-                    if (i === ACCOUNT_CACHE_LIMIT) {
-                        // got max possible new accounts, repeat query
-                        setTimeout(
-                            (function(_this2, cb) {
-                                return function() {
-                                    _this2.updateCache(cb);
-                                };
-                            })(_this, callback),
-                            0,
-                        );
-                    } // last batch of new accounts, reschedule update and call callback if needed
-                    else {
-                        setTimeout(
-                            (function(_this2) {
-                                return function() {
-                                    _this2.updateCache();
-                                };
-                            })(_this),
-                            _this.interval,
-                        );
-
-                        if (typeof callback === 'function') {
-                            log.Log(
-                                new log.Error(
-                                    'DATA',
-                                    'Added ' +
-                                        _this.cnt_account +
-                                        ' accounts to cache (' +
-                                        (Date.now() - _this.start_time) +
-                                        'ms)',
-                                    log.LEVEL.INFO,
-                                ),
-                                'SERVER',
-                            );
-                            callback();
-                        }
-                    }
+                    callback();
                 }
-            };
+            }
         })(this, this.interval, callback),
     );
-};
