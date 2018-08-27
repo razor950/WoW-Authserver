@@ -88,8 +88,8 @@ module.exports.prototype.start = function(interval, callback) {
     this.updateCache(callback);
 };
 
-module.exports.prototype.updateCache = callback =>
-    this.query(
+module.exports.prototype.updateCache = function(callback) {
+    return this.query(
         QUERIES.GET_ACCOUNT_CACHE,
         [this.max_account, ACCOUNT_CACHE_LIMIT],
         ((_this, interval, callback) => (err, rows) => {
@@ -151,3 +151,4 @@ module.exports.prototype.updateCache = callback =>
             }
         })(this, this.interval, callback),
     );
+};
