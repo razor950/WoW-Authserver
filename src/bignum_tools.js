@@ -1,26 +1,20 @@
 var BN = require('bignum');
 var crypto = require('crypto');
 
-var toBuffer = function(a, b)
-{
-    if (b)
-        return a.toBuffer({size: b});
-    else
-        return a.toBuffer();
+var toBuffer = function(a, b) {
+    if (b) return a.toBuffer({ size: b });
+    else return a.toBuffer();
 };
 
-var fromBuffer = function(a)
-{
+var fromBuffer = function(a) {
     return BN.fromBuffer(a);
 };
 
-var random = function(a)
-{
+var random = function(a) {
     return BN.fromBuffer(crypto.pseudoRandomBytes(a));
 };
 
-var modexp = function(t, u, n)
-{
+var modexp = function(t, u, n) {
     return t.powm(u, n);
 };
 

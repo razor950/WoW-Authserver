@@ -7,6 +7,7 @@ var config = ini.parse(fs.readFileSync('./config.ini', 'utf-8'));
 config.server.port = parseInt(config.server.port);
 
 config.client.ignoreip = parseInt(config.client.ignoreip);
+
 for (var i = 0; i < config.client.builds.length; ++i)
     config.client.builds[i] = parseInt(config.client.builds[i]);
 
